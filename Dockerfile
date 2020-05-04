@@ -22,26 +22,32 @@
 # you can then see the uploaded dockers and their versions in
 # https://console.cloud.google.com/gcr/images/mcai-algo?project=mcai-algo
 
+# intermediate 'builder' layer, used for slimmer image
 FROM ubuntu:20.04 AS builder
+LABEL maintainer="dmitry@magic-carpet.ch"
 
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y unzip wget
 
 WORKDIR /root
 
-RUN wget -q --progress=bar:force:noscroll --show-progress https://download2.interactivebrokers.com/installers/ibgateway/stable-standalone/ibgateway-stable-standalone-linux-x64.sh -O install-ibgateway.sh \
+RUN wget -q --progress=bar:force:noscroll --show-progress https://download2.interactivebrokers.com/installers/ibgateway/stable-standalone/ibgateway-stable-standalone-linux-x64.sh -O install-ibgateway.sh && \
     chmod a+x install-ibgateway.sh
 
-RUN wget -q --progress=bar:force:noscroll --show-progress https://github.com/IbcAlpha/IBC/releases/download/3.8.2/IBCLinux-3.8.2.zip -O ibc.zip
-RUN unzip ibc.zip -d /opt/ibc
-RUN chmod a+x /opt/ibc/*.sh /opt/ibc/*/*.sh
+RUN wget -q --progress=bar:force:noscroll --show-progress https://github.com/IbcAlpha/IBC/releases/download/3.8.2/IBCLinux-3.8.2.zip -O ibc.zip && \
+    unzip ibc.zip -d /opt/ibc && \
+    chmod a+x /opt/ibc/*.sh /opt/ibc/*/*.sh
 
 COPY run.sh run.sh
 #RUN dos2unix run.sh
 
-# Application
-FROM ubuntu:20.04
 
+# actual docker ===============================================================
+FROM ubuntu:20.04
+LABEL maintainer="dmitry@magic-carpet.ch"
+
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y socat x11vnc xvfb
 
