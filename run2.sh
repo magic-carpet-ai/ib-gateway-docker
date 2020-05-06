@@ -4,13 +4,14 @@
 # DR 05/05/2020: file modified for local runs
 #                environment variables taken from Dockerfile
 
-export DISPLAY=:0
+#export DISPLAY=:0
 export TRADING_MODE=paper
 export TWS_PORT=4002
 export VNC_PORT=5900
 
 export IBGW_VERSION=972
-export IBC_CONFIG=/home/ubuntu/github/ib-gateway-docker/ibc_config.ini
+#export IBC_CONFIG=$HOME/github/ib-gateway-docker/ibc_config.ini
+export IBC_CONFIG=$HOME/mcai/github/ib-gateway-docker/ibc_config.ini
 
 set -e
 set -o errexit
