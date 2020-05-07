@@ -8,6 +8,7 @@ export TWS_SETTINGS=$HOME/Jts
 
 export IBC_PATH=/opt/ibc
 export IBC_CONFIG=$HOME/mcai/github/ib-gateway-docker/ibc_config.ini
+#export IBC_CONFIG=$HOME/mcai/github/interactive_brokers/misc/ibc_config.ini
 
 # check that TWSUSERID and TWSPASSWORD are set
 if [[ -z $TWSUSERID || -z $TWSPASSWORD ]]; then
@@ -20,9 +21,9 @@ set -e
 set -o errexit
 
 # enable virtual display either here or directly via 'xvfb-run <command>'
-export DISPLAY=:0
-rm -f /tmp/.X0-lock
-Xvfb :0 &
+export DISPLAY=:10
+rm -f /tmp/.X10-lock
+Xvfb :10 &
 
 # enable/disable remote control via x11vnc if needed
 # export VNC_PORT=5900
