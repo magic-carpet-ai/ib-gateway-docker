@@ -11,7 +11,6 @@ export VNC_PORT=5900
 export IBGW_VERSION=972
 export TRADING_MODE=paper
 
-export TWS_PATH=$HOME/Applications   # mac specific
 export TWS_SETTINGS=$HOME/Jts
 
 export IBC_PATH=/opt/ibc
@@ -19,7 +18,10 @@ export IBC_PATH=/opt/ibc
 export IBC_CONFIG=$HOME/mcai/github/ib-gateway-docker/ibc_config.ini
 
 # mac-specific
-export JAVA_PATH=`/usr/libexec/java_home`
+if [[ $OSTYPE == darwin* ]]; then
+    export TWS_PATH=$HOME/Applications
+    export JAVA_PATH=`/usr/libexec/java_home`/bin
+fi
 
 set -e
 set -o errexit
@@ -32,9 +34,27 @@ sleep 1
 x11vnc -rfbport $VNC_PORT -display :0 -usepw -forever &
 socat TCP-LISTEN:$TWS_PORT,fork TCP:localhost:4001,forever &
 
-# Start this last and directly, so that if the gateway terminates for any reason, the container will stop as well.
-# Retry behavior can be implemented by re-running the container.
-/opt/ibc/scripts/ibcstart.sh "$IBGW_VERSION" --gateway "--mode=$TRADING_MODE" \
-    "--tws-path=$TWS_PATH" "--tws-settings-path=$TWS_SETTINGS" \
-    "--ibc-path=$IBC_PATH" "--ibc-ini=$IBC_CONFIG" \
-    "--user=$TWSUSERID" "--pw=$TWSPASSWORD"
+# echo all commands
+set -x
+
+if [[ $OSTYPE == darwin* ]]; then
+    # run latest, updated IBC scripts, deployed 3.2.2 version does not work for mac
+    #
+    # connection to IB GW on mac sporadic, sometimes works sometimes not,
+    # seems to depend on overall system load
+    #
+    # two other issues (neither affeecting the run):
+    # (1) --java-path seems to be ignored
+    # (2) getting an error message:
+    #     2020-05-07 10:46:52:045 IBC: Properties file /Users/rusakov/IBC/config.ini not found
+    $HOME/mcai/github/IBC/resources/scripts/ibcstart.sh "$IBGW_VERSION" --gateway "--mode=$TRADING_MODE" \
+        "--tws-path=$TWS_PATH" "--tws-settings-path=$TWS_SETTINGS" \
+        "--ibc-path=$IBC_PATH" "--ibc-ini=$IBC_CONFIG" \
+        "--user=$TWSUSERID" "--pw=$TWSPASSWORD"
+        # "--java-path=$JAVA_PATH"
+else
+    /opt/ibc/scripts/ibcstart.sh "$IBGW_VERSION" --gateway "--mode=$TRADING_MODE" \
+        "--tws-settings-path=$TWS_SETTINGS" \
+        "--ibc-path=$IBC_PATH" "--ibc-ini=$IBC_CONFIG" \
+        "--user=$TWSUSERID" "--pw=$TWSPASSWORD"
+fi
