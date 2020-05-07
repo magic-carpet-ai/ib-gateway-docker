@@ -49,6 +49,7 @@ if [[ $OSTYPE == darwin* ]]; then
     # (1) --java-path seems to be ignored
     # (2) getting an error message:
     #     2020-05-07 10:46:52:045 IBC: Properties file /Users/rusakov/IBC/config.ini not found
+    # (3) on mac-os GW windows are always visible (Xvfb seems not working)
     $HOME/mcai/github/IBC/resources/scripts/ibcstart.sh "$IBGW_VERSION" --gateway "--mode=$TRADING_MODE" \
         "--tws-path=$TWS_PATH" "--tws-settings-path=$TWS_SETTINGS" \
         "--ibc-path=$IBC_PATH" "--ibc-ini=$IBC_CONFIG" \
