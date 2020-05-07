@@ -9,6 +9,11 @@ export TWS_SETTINGS=$HOME/Jts
 export IBC_PATH=/opt/ibc
 export IBC_CONFIG=$HOME/mcai/github/ib-gateway-docker/ibc_config.ini
 
+# check that TWSUSERID and TWSPASSWORD are set
+if [[ -z $TWSUSERID || -z $TWSPASSWORD ]]; then
+  echo 'please set TWS user-id and password via TWSUSERID and TWSPASSWORD variables'
+  exit 1
+fi
 
 # exit on error (both options are the same)
 set -e
